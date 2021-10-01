@@ -1,9 +1,5 @@
 # Workplace-mistreatment
 
-# Data
-- follmer_long.Rdata: contains data in long format
-- follmer_wide.Rdata: contains data in wide format
-- LMS.Rdata: contains output of every LM model estimated for each number of latent states given in input
+- Tesi codice.R: contiene il codice per una breve analisi descrittiva dei dati e per la stima del modello latente di Markov multivariato con variabili risposta continue e con covariate
+- Tesi-codice.html: permette la visualizzazione in html dei principali risultati dell'analisi condotta
 
-# Code
-- 
