@@ -20,19 +20,14 @@ library(ggcorrplot)
 library(gridExtra)
 ```
 
-
-
-
 # Dataset
 
 I dati sono accessibili tramite la pagina web https://data.mendeley.com/datasets/5bn23jn2yg/1.
 
 
 ```{r}
-
 load("follmer_long.Rdata") #dati in formato long
 load("follmer_wide.Rdata") #dati in formato wide
-
 ```
 
 
@@ -85,10 +80,6 @@ strata<-c(split(follmer_long,follmer_long$time),list(Totale=follmer_long))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
-
-
-
 ## Correlazione
 
 ```{r}
@@ -106,9 +97,7 @@ mcor<-round(cor(follmer[,c(2:18)],method = "pearson"),1)
 ggcorrplot(mcor, p.mat = cor_pmat(follmer[,c(2:18)],alternative="two.sided"),
            hc.order = FALSE,type = "lower",color = c("#FC4E07", "white", "#00AFBB"),
            outline.col = "white", lab = TRUE)
-
 ```
-
 
 ## Trend valori medi
 
@@ -132,7 +121,6 @@ ggplot(A$df,aes_string(x = "time", color="Variabili", group = "Variabili")) +
 
 
 # Selezione modello 
-
 
 ```{r}
 load("LMS.Rdata") 
@@ -158,31 +146,19 @@ ggline(grafico,x="stati",y="criterio",color="index")+labs(x="Numero stati latent
 
 ```
 
-
-
-
 # Stima modello 
-
 
 ##  {.tabset .tabset-fade}
 
-
 ### Stima modello
-
-
 
 ```{r}
 modello2<-lmestCont(responsesFormula = NSUIC+ENGAGE ~ NULL,latentFormula = ~ INCIVILITY + OSTRACISM+ UNDERMINE+CENTRAL_T1+treat,index = c("ID", "time"),data = follmer_long, k = 4,output = TRUE,out_se = TRUE)
-
-
 ```
-
 
 ```{r}
 modello2
 ```
-
-
 ```{r}
 modello2$Mu
 modello2$Si
@@ -194,7 +170,6 @@ modello2$Si
 modello2$Be/modello2$seBe
 ```
 
-
 ```{r}
 modello2$Ga/modello2$seGa
 ```
@@ -203,11 +178,8 @@ modello2$Ga/modello2$seGa
 #### Density plot
 
 ```{r}
-
 plot(modello2,what = "density",components=c(1,2,3,4))
-
 ```
-
 
 #### Probabilità di transizione
 
@@ -217,9 +189,7 @@ plot(modello2,what="transitions")
 
 ```{r}
 PI<-round(apply(modello2$PI[, , , 2:modello2$TT], c(1, 2), mean), 4);PI
-
 ```
-
 
 #### Probabilità marginali
 
@@ -238,9 +208,6 @@ ggline(tab,x="TT",y="pp",color="Stati",plot_type="l")+labs(x="Periodo temporale"
   scale_fill_manual(values=c("red","orange","#3BB9FF","#1569C7"))
 ```
 
-
-
-
 ```{r}
 piv1 <- round(colMeans(modello2$Piv[, ]), 4);piv1
 ```
@@ -248,8 +215,6 @@ piv1 <- round(colMeans(modello2$Piv[, ]), 4);piv1
 ### Decoding
 
 ```{r,message=FALSE}
-
-
 Ul2<-as.data.frame(modello2$Ul) 
 colnames(Ul2)<-c("T1","T2","T3")
 Ul2$id<- seq_len(nrow(Ul2))
@@ -269,33 +234,21 @@ scale_color_manual(values = brewer.pal(n=7,name="YlGnBu"))+
 scale_fill_manual(values = brewer.pal(n=7,name="YlGnBu"))
 ```
 
-
-
 ```{r}
 apply(modello2$Ul,2,table)
 ```
 
-
-
-
 # Decodifica dei soggetti {.tabset .tabset-fade }
-
-
-
 
 ## Permanenza nello  stesso stato
 
 ```{r}
 Ul2 %>% subset(id %in% which(Ul2$T1==Ul2$T2 & Ul2$T2==Ul2$T3)) %>% head#225
-
 ```
-
-
 
  **STATO 1 (21 individui)**
 
 ```{r}
-
 allstato1<-follmer_long %>% subset(id %in% which(Ul2$T1==1 & Ul2$T2==1 & Ul2$T3==1))  
 
 allstato1$treat<-as.factor(allstato1$treat)
@@ -306,7 +259,6 @@ labels <- list(variables=list(NSUIC="Intenzione al suicidio",ENGAGE="Work engage
                               OSTRACISM="Ostracismo",CENTRAL_T1= "Stigma centrality",
                               treat="Trattamento"),groups=list("Sondaggio",""))
 
-
 strata<-c(split(allstato1,allstato1$time),list(Totale=allstato1))
 
 table1(strata,labels,groupspan = c(3,1))
@@ -316,7 +268,6 @@ table1(strata,labels,groupspan = c(3,1))
  **STATO 2 (108 individui)**
 
 ```{r}
-
 allstato2<-follmer_long %>% subset(id %in% which(Ul2$T1==2 & Ul2$T2==2 & Ul2$T3==2))  
 
 allstato2$treat<-as.factor(allstato2$treat)
@@ -326,11 +277,9 @@ strata<-c(split(allstato2,allstato2$time),list(Totale=allstato2))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
 **STATO 3 (80 individui)**
 
 ```{r}
-
 allstato3<-follmer_long %>% subset(id %in% which(Ul2$T1==3 & Ul2$T2==3 & Ul2$T3==3))  
 
 allstato3$treat<-as.factor(allstato3$treat)
@@ -338,14 +287,11 @@ allstato3$treat<-as.factor(allstato3$treat)
 strata<-c(split(allstato3,allstato3$time),list(Totale=allstato3))
 
 table1(strata,labels,groupspan = c(3,1))
-
 ```
-
  
 **STATO 4 (16 individui)**
 
 ```{r}
-
 allstato4<-follmer_long %>% subset(id %in% which(Ul2$T1==4 & Ul2$T2==4 & Ul2$T3==4))  
 
 allstato4$treat<-as.factor(allstato4$treat)
@@ -364,7 +310,6 @@ table1(strata,labels,groupspan = c(3,1))
 Ul2[Ul2$id %in% which(!(Ul2$T1==Ul2$T2 | Ul2$T2==Ul2$T3)), ]#16
 ```
 
-
 ```{r}
 change<-follmer_long %>% subset(id %in% which(!(Ul2$T1==Ul2$T2 | Ul2$T2==Ul2$T3) )) 
 
@@ -373,17 +318,13 @@ change$treat<-as.factor(change$treat)
 strata<-c(split(change,change$time),list(Totale=change))
 
 table1(strata,labels,groupspan = c(3,1))
-
 ```
-
-
 
 **Cambio stato una volta sola**
 
 ```{r}
 head(Ul2[Ul2$id %in% which((Ul2$T1==Ul2$T2 & Ul2$T2!=Ul2$T3) |(Ul2$T1!=Ul2$T2 & Ul2$T2==Ul2$T3)), ])
 ```
-
 
 ```{r}
 changeone<-follmer_long %>% subset(id %in% which((Ul2$T1==Ul2$T2 & Ul2$T2!=Ul2$T3) |(Ul2$T1!=Ul2$T2 & Ul2$T2==Ul2$T3))) 
@@ -395,21 +336,16 @@ strata<-c(split(changeone,changeone$time),list(Totale=changeone))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
 ## Stato peggiore in T3
 
 ```{r}
-
 stato3<-follmer_long  %>% subset(id %in% which(Ul2$T3==3))  # individui che sono stati collocati nello stato peggiore al tempo 3
-
 ```
-
 
 **7 soggetti si trovano nello stato 3 solo alla terza occasione temporale**
 ```{r}
 Ul2[Ul2$T1!=3 & Ul2$T2!=3 & Ul2$T3==3,]
 ```
-
 
 ```{r}
 stato3T3<-follmer_long %>% subset(id %in% which(Ul2$T1!=3 & Ul2$T2!=3 & Ul2$T3==3))  
@@ -421,49 +357,35 @@ strata<-c(split(stato3T3,stato3T3$time),list(Totale=stato3T3))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
-
 **3 soggetti si trovano nello stato 3 alla seconda e terza occasione temporale**
 ```{r}
 Ul2[Ul2$T1!=3 & Ul2$T2==3 & Ul2$T3==3,]
 ```
 
-
-
 ```{r}
 stato3T2T3<-follmer_long %>% subset(id %in% which(Ul2$T1!=3 & Ul2$T2==3 & Ul2$T3==3)) %>% select(c(1,4,6:12)) 
-
 ```
-
 
 
 **4 soggetti si trovano nello stato 3 alla prima e seconda occasione temporale**
 ```{r}
-
 Ul2[Ul2$T1==3 & Ul2$T2!=3 & Ul2$T3==3,]
 ```
 
-
 ```{r}
 stato3T1T2<-follmer_long %>% subset(id %in% which(Ul2$T1==3 & Ul2$T2!=3 & Ul2$T3==3)) %>% select(c(1,4,6:12))
-
 ```
-
 
 ## Stato migliore in T3
 
 ```{r}
-
 stato2<-follmer_long  %>% subset(id %in% which(Ul2$T3==2))  # individui che sono stati collocati nello stato migliore al tempo 3
-
 ```
-
 
 **5 soggetti si trovano nello stato 2 solo al tempo 3**
 ```{r}
 Ul2[Ul2$T1!=2 & Ul2$T2!=2 & Ul2$T3==2,]
 ```
-
 
 ```{r}
 stato2T3<-follmer_long %>% subset(id %in% which(Ul2$T1!=2 & Ul2$T2!=2 & Ul2$T3==2))  
@@ -474,13 +396,10 @@ strata<-c(split(stato2T3,stato2T3$time),list(Totale=stato2T3))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
-
 **6 soggetti si trovano nello stato 2 al tempo 2 e 3**
 ```{r}
 Ul2[Ul2$T1!=2 & Ul2$T2==2 & Ul2$T3==2,]
 ```
-
 
 ```{r}
 stato2T2T3<-follmer_long %>% subset(id %in% which(Ul2$T1!=2 & Ul2$T2==2 & Ul2$T3==2))  
@@ -491,31 +410,22 @@ strata<-c(split(stato2T2T3,stato2T2T3$time),list(Totale=stato2T2T3))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
-
 **2 soggetti si trovano nello stato 2 al tempo 1 e 3**
 ```{r}
-
 Ul2[Ul2$T1==2 & Ul2$T2!=2 & Ul2$T3==2,]
 ```
-
 
 ```{r}
 stato2T1T3<-follmer_long %>% subset(id %in% which(Ul2$T1==2 & Ul2$T2!=2 & Ul2$T3==2))  
 stato2T1T3 %>% select(c(1,4,6:12)) %>% as.data.frame
 ```
 
-
-
 ## Transizione da quarto stato
-
 
 ```{r}
 quattroU2<-(Ul2$T1==4 & Ul2$T2==2) | ( Ul2$T2==4 & Ul2$T3==2) 
 Ul2[quattroU2, ]
-
 ```
-
 
 ```{r}
 quattro2<-follmer_long %>% subset(id %in% which(quattroU2)) 
@@ -527,13 +437,10 @@ strata<-c(split(quattro2,quattro2$time),list(Totale=quattro2))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
-
 ```{r}
 quattroU3<-(Ul2$T1==4 & Ul2$T2==3 ) | ( Ul2$T2==4 & Ul2$T3==3) 
 Ul2[quattroU3,]
 ```
-
 
 ```{r}
 quattro3<-follmer_long %>% subset(id %in% which(quattroU3) )
@@ -544,14 +451,12 @@ strata<-c(split(quattro3,quattro3$time),list(Totale=quattro3))
 table1(strata,labels,groupspan = c(3,1))
 ```
 
-
 ## Transizione da secondo a primo stato
 
 ```{r}
 dueu<-(Ul2$T1==2 & Ul2$T2==1 ) | ( Ul2$T2==2 & Ul2$T3==1) 
 Ul2[dueu,]
 ```
-
 
 ```{r}
 due<-follmer_long %>% subset(id %in% which(dueu) )
